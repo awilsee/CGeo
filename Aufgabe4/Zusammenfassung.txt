@@ -1,0 +1,83 @@
+﻿Praktikum Computational Geometry SoSe 2017
+Zusammenfassung Aufgabe 4 - Qhull
+
+Andreas Wilhelm & Jakob Schuster
+------------------------------------------
+
+
+Programmiersprache
+------------------------------------------
+Qhull, Batch- & Matlab-Skript
+
+Generierung der Punktemengen
+------------------------------------------
+Mittels des Skriptes "automaticGeneration.bat" können automatisch Punktemengen in den unterschiedlichen Dimensionen (2-8) und mit ansteigender Anzahl an der Punkten generiert werden. Hierbei wurde das tool rbox aus dem Qhull-Paket verwendet. Als Parameter für rbox gibt man die Anzahl der Punkte und die gewünschte Dimensionen an. Die resultierenden Daten werden in eine Datei umgeleitet. Dadurch ergibt sich folgender Aufruf '"rbox.exe %quantitiy% D%dim%" > file' im Batch-Skript.
+Für das Hochzählen der Anzahl der Punkte können verschiedene Algorithmen verwendet werden (muss im Skript angepasst werden).
+In dem Plot "XXXX.svg" wurde mit 100 Punkten gestartet und folgender Algorithmus verwendet: neueAnzahl = aktuelleAnzahl + (aktuelleAnzahl / 2)
+In dem Plot "XXXX.svg" wurde ebenfalls mit 100 Punkten gestartet und die Anzahl immer verdoppelt (neueAnzahl = aktuelleAnzahl * 2).
+
+Berechnen der konvexen Hülle
+------------------------------------------
+Mittels des Skriptes "automaticCalculation.bat" können automatisch von allen Dateien im Ordner die konvexe Hülle berechnet werden. Es wird vorrausgesetzt, dass es sich bei allen Dateien, um korrekte Punktemengen handelt. Hierbei wird im Skript lediglich jede Datei ausgelesen und mit einer Pipe an "qconvex.exe" weiter geleitet, welches dann die Hülle berechnet und das Ergebnis in einer Datei speichert. Dadurch ergibt sich folgender Aufruf 'type "file" | qhull-2015.2\bin\qconvex TO "file_result"' im Batch-Skript. Bei einer großen Punktemenge und einer höheren Dimension (7-8) kam es zu folgendem Error des Programms:
+> QH6082 qhull error (qh_memalloc): insufficient memory to allocate 5995380 bytes
+> 
+> While executing: rbox 12921 D8 | qconvex TO data_2_results\file_12921_8
+> Options selected for Qhull 2015.2 2016/01/18:
+>   run-id 1296385911  TOutput-file  data_2_results\file_12921_8  Qxact_merge
+>   _zero-centrum  Q3-no-merge-vertices-dim-high  _max-width  1
+>   Error-roundoff 2.6e-015  _one-merge 4.5e-014  _near-inside 2.3e-013
+>   Visible-distance 1.6e-014  U-coplanar-distance 1.6e-014
+>   Width-outside 3.2e-014  _wide-facet 9.5e-014
+> Last point added to hull was p8318.  Last merge was #6172.
+> 
+> At error exit:
+> 
+> Convex hull of 12921 points in 8-d:
+> 
+>   Number of vertices: 2399
+>   Number of facets: 5791515
+>   Number of non-simplicial facets: 427
+> 
+> Statistics for: rbox 12921 D8 | qconvex TO data_2_results\file_12921_8
+> 
+>   Number of points processed: 2871
+>   Number of hyperplanes created: 41698876
+>   Number of distance tests for qhull: 455669312
+>   Number of distance tests for merging: 431197337
+>   Number of distance tests for checking: 0
+>   Number of merged facets: 6172
+>   Maximum distance of merged point above facet: 1.8e-014 (0.4x)
+>   Maximum distance of merged vertex below facet: -1.7e-014 (0.3x)
+> 
+> 
+> precision problems (corrected unless 'Q0' or an error)
+>    1657 coplanar horizon facets for new vertices
+>     181 nearly singular or axis-parallel hyperplanes
+>       2 zero divisors during back substitute
+>       2 zero divisors during gaussian elimination
+> QH6263 qhull internal warning (main): did not free 5995380 bytes of long memory(1 pieces)
+
+Dieser Error bedeutet, dass das Programm kein Arbeitsspeicher mehr zugewiesen bekommt oder selbst einen Fehler verursacht. Obwhol eigentlich noch phyiskalisch verfügbar war. Jedoch kann es sich hierbei um eine Einschränkung des Betriebssystems handeln, wobei der Error immer bei verschiedenen Größen an allokierten Bytes auftrat. Dadurch könnte es sich auch um einen Bug des Programms selber handeln.
+Dateien mit einer Punktemenge über 20.000.000 und der 6. Dimension wird direkt mit einem Error abgebrochen:
+> QH6076 qhull error: insufficient memory to read 20000000 points
+> 
+> While executing: rbox 20000000 D6
+>  | qconvex TO test_results\file_20000000_6
+> Options selected for Qhull 2015.2 2016/01/18:
+>   run-id 1415396278  TOutput-file  test_results\file_20000000_6
+
+
+Filtern der Ergebnisse
+------------------------------------------
+Mittels des Skriptes "automaticParsing.bat" können automatisch alle Dateien im Ordner nach der CPU-Rechenzeit, der Anzahl an Punkten und der Dimension gefiltert werden. Es wird vorrausgesetzt, dass es sich bei allen Dateien, um Ergebnisse des qconvex-Tools handelt. Die gefilteren Daten werden in einer final-Datei abgespeichert.
+
+Plotten der Ergebnis-Daten
+------------------------------------------
+Mittels des MatlabSkriptes "importandPlotFinalData.m" können die gefilterten Daten mit Matlab eingelesen und geplottet werden. Die x-Achse mit der Anzahl an Punkten, sowie die z-Achse mit der benötigten CPU-Rechenzeit, sind zur besseren Darstellung logarithmisch skaliert.
+
+
+Ergebnisse des Programms
+------------------------------------------
+Alle Programme wurden immer auf dem selben PC ausgeführt. Darin verbaut ist ein Intel Core i7-6700k, welcher sich bei den Berechnungen konstant auf 4,4 Ghz taktet. Die Programme sind beide single-threaded.
+
+
