@@ -6,14 +6,15 @@ mkdir data_%loopIncrement%
 SET /a loopDim=2
 
 SET /a loopIncrement=2
-SET /a loopEnd=1000000
+SET /a loopEnd=10000000
 
 :goLoopDim
-SET /a loopQuantitiy=1000
+SET /a loopQuantitiy=100
 
 :goLoopQuantity
-echo "rbox %loopQuantitiy% D%loopDim%" & qhull-2015.2\bin\rbox %loopQuantitiy% D%loopDim% > data_%loopIncrement%\file_%loopQuantitiy%_%loopDim%
+echo "rbox %loopQuantitiy% D%loopDim%" & qhull-2015.2\bin\rbox.exe %loopQuantitiy% D%loopDim% > data_%loopIncrement%\file_%loopQuantitiy%_%loopDim%
 IF %loopQuantitiy% GEQ %loopEnd% GOTO goLoopQuantityEnds
+::SET /a loopQuantitiy=%loopQuantitiy%+(%loopQuantitiy%/%loopIncrement%)
 SET /a loopQuantitiy=%loopQuantitiy%*%loopIncrement%
 GOTO goLoopQuantity
 
