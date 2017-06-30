@@ -1,0 +1,59 @@
+Praktikum Computational Geometry SoSe 2017
+Zusammenfassung Aufgabe 2
+
+Andreas Wilhelm & Jakob Schuster
+------------------------------------------
+
+
+Programmiersprache
+------------------------------------------
+C++
+
+Parsing der SVG-Datei
+------------------------------------------
+Die SVG-Datei wurde zeilenweise eingelesen und mithilfe eines XML-Parsers konnte anhand der Attribute und der Tiefe der Nodes durch die Struktur der SVG-Datei gesteuert werden. Die Bundesländer und Städte wurden in "path"-Elementen gespeichert, ihre Namen im "id"-Attribut. Die Koordinaten von Bundesländern wurden im Attribut "d", Städte in "sodipodi"-Koordinaten gespeichert.
+Die Bundesländern bestehen aus mehreren Polygonen, deren Punkte teils absolut und teils relativ gespeichert wurden, so dass auch hier ein entsprechendes Parsing (Beginn einer Zeile z.B. mit M, l, L, z - Sonderfall: einmal tritt H innerhalb einer Zeile auf) notwendig war, um alle Punkte der Polygone mit absoluten Werten speichern zu können.
+
+Flächen der Bundesländer
+------------------------------------------
+Bundesländer bestehen aus mehreren Polygonen, deren Flächen mithilfe der Gaußschen Dreiecksformel berechnet wurde. Manche Polygone liegen innerhalb eines anderen Polygons, was bedeutet, dass diese Fläche nicht teil des Bundeslandes ist - quasi ein Loch im Polygon. Es musste also für jedes Polygon getestet werden, ob es in einem anderen liegt und ggf. von der Fläche des Bundeslandes subtrahiert werden (z.B. liegen Teile Bremens innerhalb Niedersachsens, welche dann als Loch in Niedersachsen gespeichert sind).
+
+Bundesländer von Städten
+------------------------------------------
+Um herauszufinden, ob eine Stadt innerhalb eines Bundeslands liegt, wurde der "Point in Polygon"-Test (PiP-Test) genutzt. Für eine Stadt wurde ein PiP-Test mit jedem Pfad eines Bundeslandes gemacht und die Anzahl der positiven Test addiert. Nur wenn eine Stadt in einem Bundesland in genau einem Polygon liegt, so liegt sie auch im Bundesland. Werden für eine Stadt zwei Polygone gefunden, so entspricht dies einem Loch und die Stadt liegt nicht in diesem Bundesland (z.B. liegt Berlin nicht in Brandenburg (= zwei Polygone), sondern Berlin (= ein Polygon)).
+
+Ergebnisse des Programms
+------------------------------------------
+Die Fläche von Thüringen beträgt 13724.6
+Die Fläche von Schleswig-Holstein beträgt 13456.4
+Die Fläche von Sachsen-Anhalt beträgt 17450.5
+Die Fläche von Sachsen beträgt 15667.9
+Die Fläche von Saarland beträgt 2179.76
+Die Fläche von Rheinland-Pfalz beträgt 16913.6
+Die Fläche von Nordrhein-Westfalen beträgt 28966.4
+Die Fläche von Niedersachsen beträgt 40633.5
+Die Fläche von Mecklenburg-Vorpommern beträgt 19658.8
+Die Fläche von Hessen beträgt 17977.5
+Die Fläche von Hamburg beträgt 633.325
+Die Fläche von Bremen beträgt 340.931
+Die Fläche von Brandenburg beträgt 25275.9
+Die Fläche von Berlin beträgt 766.233
+Die Fläche von Bayern beträgt 60026.1
+Die Fläche von Baden-Württemberg beträgt 30522.3
+
+München liegt in Bayern
+Berlin liegt in Berlin
+Stuttgart liegt in Baden-Württemberg
+Saarbrücken liegt in Saarland
+Wiesbaden liegt in Hessen
+Mainz liegt in Rheinland-Pfalz
+Düsseldorf liegt in Nordrhein-Westfalen
+Bremen liegt in Bremen
+Erfurt liegt in Thüringen
+Dresden liegt in Sachsen
+Magdeburg liegt in Sachsen-Anhalt
+Hannover liegt in Niedersachsen
+Hamburg liegt in Hamburg
+Kiel liegt in Schleswig-Holstein
+Schwerin liegt in Mecklenburg-Vorpommern
+Potsdam liegt in Brandenburg
