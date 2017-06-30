@@ -43,6 +43,7 @@ void parseFile(const string& filePath, xml_document<>& doc);
 states_t generateStates(const xml_document<>& doc);
 void parsePaths(string value, paths_t& paths);
 void calculateStateAreas(states_t& states);
+bool testPointInPath(Point& point, points_t& path);
 cities_t generateCities(const xml_document<>& doc);
 State findStateOfCity(City& city, states_t& states);
 int calcCrossedLines(Point& j1, Point& j2, points_t& path);
@@ -89,7 +90,6 @@ void parseFile(const string& filePath, xml_document<>& doc) {
 }
 
 states_t generateStates(const xml_document<>& doc) {
-	vector<string> ids;
 	states_t states;
 
 	// scan states from xml nodes
@@ -168,128 +168,120 @@ void calculateStateAreas(states_t& states) {
 
 		for (int j = 0; j < state.paths.size(); j++) // iterate through paths of state
 		{
-			points_t path = state.paths[j];
+			points_t& path = state.paths[j];
 			int pathSize = path.size();
 			double pathArea = 0.0; // initiate size (area) of path
 
 			for (int k = 1; k <= pathSize; k++) // iterate through points in path
 			{
 				// set points for size of path calculation
-				Point point_1 = path[(k - 1) % pathSize];
-				Point point_2 = path[k % pathSize];
-				Point point_3 = path[(k + 1) % pathSize];
+				Point& point_1 = path[(k - 1) % pathSize];
+				Point& point_2 = path[k % pathSize];
+				Point& point_3 = path[(k + 1) % pathSize];
 
 				pathArea += point_2.y * (point_1.x - point_3.x) / 2; // calculate size of path
 			}
 
-			stateArea += abs(pathArea); // add size of path to size of state
-			//stateArea *= 1.1805; // multiply with factor to compare with real sizes
-		}
-		state.area += stateArea;
-
-		// subtract size of Berlin from Brandenburg & Bremen from Niedersachsen
-		if ((state.name == "Berlin") || (state.name == "Bremen")) {
-			for (int j = 0; j < states.size(); j++) // iterate through states
+			pathArea = abs(pathArea); // make sure the area is positive
+			for (int k = 0; k < state.paths.size(); k++) // iterate through paths of state
 			{
-				if ((state.name == "Berlin" && states[j].name == "Brandenburg") || (state.name == "Bremen" && states[j].name == "Niedersachsen")) { // if not the same state
-					states[j].area -= stateArea;
+				if ((j != k) && (testPointInPath(path[0], state.paths[k]))) { // if not the path itself & path lies in other path
+					pathArea *= -1; // change to negative area, as this path has to be subtracted
 				}
 			}
+			stateArea += pathArea; // add/subtract size of path to/from size of state
+
 		}
+		//stateArea *= 1.1805; // multiply with factor to compare with real sizes
+		state.area += stateArea; // add size to size of state
+	}
+}
+
+bool testPointInPath(Point& point, points_t& path) {
+	Point outOfPath = { -1, -1 }; // set point outside of path (P(-1,-1) doesn't lie in any of the states as coordinates are positive)
+
+	int numCrossedLines = calcCrossedLines(point, outOfPath, path); // calculate number of crosses
+
+	if (numCrossedLines % 2 == 1) {  // if number of crosses odd, point in state
+		return true; // point in path
+	}
+	return false; // point not in path
+}
+
+cities_t generateCities(const xml_document<>& doc) {
+	cities_t cities;
+
+	// scan cities from xml nodes
+	xml_node<> *pRoot = doc.first_node();
+	for (xml_node<> *pNode = pRoot->first_node("path"); pNode; pNode = pNode->next_sibling())
+	{
+		City city;
+		xml_attribute<> *pAttrID = pNode->first_attribute("id");
+		city.name = pAttrID->value();
+		city.point.x = stod(pNode->first_attribute("sodipodi:cx")->value());
+		city.point.y = stod(pNode->first_attribute("sodipodi:cy")->value());
+		cities.push_back(city);
 	}
 
-	cities_t generateCities(const xml_document<>& doc) {
-		vector<string> ids;
-		cities_t cities;
+	return cities;
+}
 
-		// scan cities from xml nodes
-		xml_node<> *pRoot = doc.first_node();
-		for (xml_node<> *pNode = pRoot->first_node("path"); pNode; pNode = pNode->next_sibling())
+State findStateOfCity(City& city, states_t& states) {
+	State cityState;
+
+	for (int i = 0; i < states.size(); i++) // iterate through states
+	{
+		State& state = states[i];
+		int numberOfPathsInState = 0; // initiate number of paths the city lies in
+
+		for (int j = 0; j < state.paths.size(); j++) // iterate through paths
 		{
-			City city;
-			xml_attribute<> *pAttrID = pNode->first_attribute("id");
-			city.name = pAttrID->value();
-			city.point.x = stod(pNode->first_attribute("sodipodi:cx")->value());
-			city.point.y = stod(pNode->first_attribute("sodipodi:cy")->value());
-			cities.push_back(city);
-		}
-
-		return cities;
-	}
-
-	int testPointInState(Point& point, State& state) {
-		Point outOfPath = { -1, -1 }; // set point outside of path (P(-1,-1) doesn't lie in any of the states as coordinates are positive)
-
-		for (int i = 0; i < state.paths.size(); i++) // iterate through paths of state
-		{
-			int numCrossedLines = calcCrossedLines(point, outOfPath, state.paths[i]); // calculate number of crosses
-
-			if (numCrossedLines % 2 == 1)  // if number of crosses odd, point in state
-				return i; // return number of path
-		}
-		return -1; // point not in state
-	}
-
-	State findStateOfCity(City& city, states_t& states) {
-		State cityState;
-
-		for (int j = 0; j < states.size(); j++) // iterate through states
-		{
-			State state = states[j];
-			int path_id = -1;
-
-			int testPath_id = testPointInState(city.point, state); // test if city lies in state and safe that path (if existing)
-			if (testPath_id >= 0) { // if city lies in state
-				if (path_id >= 0) {	// if city already lies in another state
-					if (testPointInState(cityState.paths[path_id][0], state) >= 0) { // if new state of city lies in existing state of city
-						// change state of city
-						cityState = state;
-						path_id = testPath_id;
-					}
-				}
-				else {
-					// set state of city
-					cityState = state;
-					path_id = testPath_id;
-					break;
-				}
+			if (testPointInPath(city.point, state.paths[j])) { // if city lies in path
+				numberOfPathsInState += 1; // increment number of paths the city lies in
 			}
 		}
-		return cityState;
+
+		if (numberOfPathsInState == 1) { // if city lies in exactly one path
+			// set state of city & return
+			cityState = state;
+			return cityState;
+		}
 	}
+	return cityState; // no state found for city
+}
 
-	// calculates the number of crosses of the line between the points j1 & j2 and the lines on the path
-	int calcCrossedLines(Point& j1, Point& j2, points_t& path) {
-		int numCrosses = 0; // initiate number of crosses
+// calculates the number of crosses of the line between the points j1 & j2 and the lines on the path
+int calcCrossedLines(Point& j1, Point& j2, points_t& path) {
+	int numCrosses = 0; // initiate number of crosses
 
-		for (int i = 0; i < path.size(); i++) // iterate through points in path
-		{
-			// set points on the path to test the line between them against line between points j1 & j2
-			Point i1 = path[i];
-			Point i2 = path[(i + 1) % path.size()];
+	for (int i = 0; i < path.size(); i++) // iterate through points in path
+	{
+		// set points on the path to test the line between them against line between points j1 & j2
+		Point i1 = path[i];
+		Point i2 = path[(i + 1) % path.size()];
 
-			// calculate ccw's between the 4 points
-			double ccw1 = calcCcw(i1, i2, j1);
-			double ccw2 = calcCcw(i1, i2, j2);
-			double ccw3 = calcCcw(j1, j2, i1);
-			double ccw4 = calcCcw(j1, j2, i2);
+		// calculate ccw's between the 4 points
+		double ccw1 = calcCcw(i1, i2, j1);
+		double ccw2 = calcCcw(i1, i2, j2);
+		double ccw3 = calcCcw(j1, j2, i1);
+		double ccw4 = calcCcw(j1, j2, i2);
 
-			// calculate if lines between the points cross
-			if (ccw1 == 0 && ccw2 == 0) {
-				double lambda1 = (j1.x - i1.x) / (i2.x - i1.x);
-				double lambda2 = (j2.x - i1.x) / (i2.x - i1.x);
-				if ((0 <= lambda1 && lambda1 <= 1) || (0 <= lambda2 && lambda2 <= 1)) {
-					numCrosses++;
-				}
-			}
-			else if (ccw1 * ccw2 <= 0 && ccw3 * ccw4 <= 0) {
+		// calculate if lines between the points cross
+		if (ccw1 == 0 && ccw2 == 0) {
+			double lambda1 = (j1.x - i1.x) / (i2.x - i1.x);
+			double lambda2 = (j2.x - i1.x) / (i2.x - i1.x);
+			if ((0 <= lambda1 && lambda1 <= 1) || (0 <= lambda2 && lambda2 <= 1)) {
 				numCrosses++;
 			}
 		}
-
-		return numCrosses;
+		else if (ccw1 * ccw2 <= 0 && ccw3 * ccw4 <= 0) {
+			numCrosses++;
+		}
 	}
 
-	double calcCcw(Point& p1, Point& p2, Point& p3) {
-		return (p1.x * p2.y - p1.y * p2.x) + (p2.x * p3.y - p2.y * p3.x) + (p1.y * p3.x - p1.x * p3.y);
-	}
+	return numCrosses;
+}
+
+double calcCcw(Point& p1, Point& p2, Point& p3) {
+	return (p1.x * p2.y - p1.y * p2.x) + (p2.x * p3.y - p2.y * p3.x) + (p1.y * p3.x - p1.x * p3.y);
+}
