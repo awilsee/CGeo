@@ -13,8 +13,9 @@ Generierung der Punktemengen
 ------------------------------------------
 Mittels des Skriptes "automaticGeneration.bat" können automatisch Punktemengen in den unterschiedlichen Dimensionen (2-8) und mit ansteigender Anzahl an der Punkten generiert werden. Hierbei wurde das tool rbox aus dem Qhull-Paket verwendet. Als Parameter für rbox gibt man die Anzahl der Punkte und die gewünschte Dimensionen an. Die resultierenden Daten werden in eine Datei umgeleitet. Dadurch ergibt sich folgender Aufruf '"rbox.exe %quantitiy% D%dim%" > file' im Batch-Skript.
 Für das Hochzählen der Anzahl der Punkte können verschiedene Algorithmen verwendet werden (muss im Skript angepasst werden).
-In dem Plot "XXXX.svg" wurde mit 100 Punkten gestartet und folgender Algorithmus verwendet: neueAnzahl = aktuelleAnzahl + (aktuelleAnzahl / 2)
-In dem Plot "XXXX.svg" wurde ebenfalls mit 100 Punkten gestartet und die Anzahl immer verdoppelt (neueAnzahl = aktuelleAnzahl * 2).
+Bei den Plots/Daten von "final_plusAnzdurch2.*" wurde mit 100 Punkten gestartet und folgender Algorithmus verwendet: neueAnzahl = aktuelleAnzahl + (aktuelleAnzahl / 2)
+Bei den Plots/Daten von "final_mal2.*" wurde ebenfalls mit 100 Punkten gestartet und die Anzahl immer verdoppelt (neueAnzahl = aktuelleAnzahl * 2).
+Bei den Plots/Daten von "final_mal10.*" wurde mit 10 Punkten gestartet und die Anzahl immer verzehnfacht (neueAnzahl = aktuelleAnzahl * 10).
 
 Berechnen der konvexen Hülle
 ------------------------------------------
@@ -57,7 +58,8 @@ Mittels des Skriptes "automaticCalculation.bat" können automatisch von allen Da
 >       2 zero divisors during gaussian elimination
 > QH6263 qhull internal warning (main): did not free 5995380 bytes of long memory(1 pieces)
 
-Dieser Error bedeutet, dass das Programm kein Arbeitsspeicher mehr zugewiesen bekommt oder selbst einen Fehler verursacht. Obwhol eigentlich noch phyiskalisch verfügbar war. Jedoch kann es sich hierbei um eine Einschränkung des Betriebssystems handeln, wobei der Error immer bei verschiedenen Größen an allokierten Bytes auftrat. Dadurch könnte es sich auch um einen Bug des Programms selber handeln.
+Dieser Error bedeutet, dass das Programm kein Arbeitsspeicher mehr zugewiesen bekommt oder selbst einen Fehler verursacht. Obwhol eigentlich noch phyiskalisch verfügbar war. Jedoch kann es sich hierbei um eine Einschränkung des Betriebssystems handeln, wobei der Error immer bei verschiedenen Größen an allokierten Bytes auftrat. Dadurch könnte es sich auch um einen Bug des Programms selber handeln. Bei den Errors verwendete das Programm zwischen zwei und sechs Gigabyte RAM.
+
 Dateien mit einer Punktemenge über 20.000.000 und der 6. Dimension wird direkt mit einem Error abgebrochen:
 > QH6076 qhull error: insufficient memory to read 20000000 points
 > 
@@ -78,6 +80,15 @@ Mittels des MatlabSkriptes "importandPlotFinalData.m" können die gefilterten Da
 
 Ergebnisse des Programms
 ------------------------------------------
-Alle Programme wurden immer auf dem selben PC ausgeführt. Darin verbaut ist ein Intel Core i7-6700k, welcher sich bei den Berechnungen konstant auf 4,4 Ghz taktet. Die Programme sind beide single-threaded.
+Alle Programme wurden immer auf dem selben PC ausgeführt. Darin verbaut ist ein Intel Core i7-6700k, welcher sich bei den Berechnungen konstant auf 4,4 Ghz taktet und 16GB RAM. Die Programme sind beide single-threaded. Bei den Plots auf die logarithmische Darstellung der x- und z-Achse achten!
 
+Die nachfolgenden Zeiten beziehen sich auf den Plot "final_mal2.*". Hierbei wurde die Anzahl an Punkten immer verdoppelt. Es können aber auch genau so gut die anderen Plots herangezogen werden, die Erkenntnisse sind die selben. "final_plusAnzdurch2.*" ist noch ein bisschen feiner aufgelöst.
+Bereits bei 2D erkennt man einen deutlichen Anstieg der CPU-Rechenzeit mit Zunahme der Punktemenge. Unter 3200 Punkten ist die Zeit mit dem Tool nicht einmal messbar. bei 1.311e^7 beträgt die CPU-Rechenzeit 1.055 Sekunden. 
+Bei 3D verdoppeln sich ungefähr die 2D-Zeiten. 
+Bis zu 4D steigen die Zeiten stetig zur Dimension und Punktemenge an, bewegen sich aber noch in einem guten Rahmen. Bei 10^7 beträgt die CPU-Rechenzeit bei 4D auch lediglich 6.241 Sekunden. 
+In 5D erhöht sich der Wert auf 27.01, was dem 4.5-fachem entspricht. Mit 1.024e^5 Punkten im 5D ist es sogar nahezu das 10-fache der 4D CPU-Rechenzeit. 
+Mit 6D steigen die Zeiten sehr deutlich an. Sodass die CPU-Rechenzeit mit 1.024e^5 Punkten gegenüber 5D um das 22-fache zunimmt. Mit 1.311e^7 Punkten benötigt die CPU bereits 373.6 Sekunden, ca das 14-fache von 5D. 
+Bei 7D nehmen die CPU-Rechenzeiten nun noch einmal erheblich zu. Mit 1.024e^5 Punkten beträgt nun die Rechenzeit bereits 301.3 Sekunden, was bei 6D erst bei 1.311e^7 der Fall war und somit auch wieder das 25-fache von der 6D-Zeit. Beim Vergleich der 7D-Zeit mit 5D ist es das 550-fache. Bei größeren Punktemengen hat das Tool immer mit dem Memory-Error (siehe "Berechnen der konvexen Hülle") abgebrochen. 
+Bei 8D gibt es einen erneuten Anstieg und noch einen früheren Abbruch. Die maximale Punktemenge beträgt nun lediglich 3200 Punkte. Dafür benötigt die CPU 162.4 Sekunden, was dem 12-fachen der 7D-Zeit entspricht.
 
+Es zeigt sich sehr deutlich, dass mit ansteigender Dimension erheblich mehr Zeit und auch mehr Ressourcen benötigt werden. Mit Zunahme der Punktemengen werden ebenso stetig mehr Zeit und Ressourcen benötigt. Die Kombination aus beidem bringt das Programm sogar an die Grenzen, sodass es zum Error kommt.
