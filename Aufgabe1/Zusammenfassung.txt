@@ -1,0 +1,32 @@
+Praktikum Computational Geometry SoSe 2017
+Zusammenfassung Aufgabe 1
+
+Andreas Wilhelm & Jakob Schuster
+------------------------------------------
+
+
+Programmiersprache
+------------------------------------------
+Java
+
+Programmbeschreibung
+------------------------------------------
+Das Programm basiert auf einem Brute-Force-Algorithmus und hat eine Komplexität von O(n²).
+Jede Strecke wird dabei mit jeder anderen Strecke verglichen - dabei werden, wie im Skript beschrieben, zunächst alle CCW-Werte zwischen zwei Strecken berechnet.
+Mithilfe der CCW-Werte kann daraufhin beschrieben werden wie die Strecken zueinander liegen (kollinear / nicht kollinear).
+Sind die beiden Strecken zueinander kollinear, so wird mithilfe zweier Parameter (lamdba1 und lambda2) untersucht, ob die beiden Strecken sich überlappen.
+Sind die beiden Strecken zueinander nicht kollinear, so muss getestet werden, ob die Punkte der beiden Strecken jeweils auf unterschiedlichen Seiten der anderen Strecke liegen. Auch das kann mithilfe der CCW-Werte berechnet werden, da diese aufgrund ihrer Vorzeichen Aufschluss darüber geben, ob zwei Punkte auf unterschiedlichen Seiten (oder sogar auf) einer Strecke liegen.
+
+Ergebnisse des Programms & Auswertung
+------------------------------------------
+Anzahl an Überschneidungen: 11
+Verlaufszeit s_1000_1.dat: 155 Millisek.
+
+Anzahl an Überschneidungen: 732
+Verlaufszeit s_10000_1.dat: 648 Millisek.
+
+Anzahl an Überschneidungen: 77126
+Verlaufszeit s_100000_1.dat: 60137 Millisek.
+
+Die Laufzeit des Programms steigt bei einer höheren Anzahl an Punkten deutlich an.
+Genau das war auch zu erwarten, da der Brute-Force-Algorithmus eine Komplexität von O(n²) hat.
