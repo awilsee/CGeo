@@ -1,0 +1,68 @@
+Praktikum Computational Geometry SoSe 2017
+Zusammenfassung Aufgabe 3
+
+Andreas Wilhelm & Jakob Schuster
+------------------------------------------
+
+
+Programmiersprache
+------------------------------------------
+Java
+
+Programmstrukturen
+------------------------------------------
+eventQueue:
+TreeMap bestehend aus 3 Double Werten (x- & y-Koordinate und Eventtyp).
+Die Reihenfolge der Events wird anhand eines Komparators bestimmt (Größe der Double-Werte in genannter Reihenfolge; sind alle Werte gleich, so wird ein neues Event vor bestehende Events gesetzt). Die Eventtypen haben die Reihenfolge Startpunkt, Intersektion, Endpunkt.
+
+sweepLine:
+LinkedList der Reihenfolge der Segmente in der Sweep Line.
+Beim Hinzufügen eines neuen Segments in die LinkedList wird zunächst die y-Koordinate (an der aktuellen x-Koordinate der sweep line) verglichen. Haben mehrere Segmente an dieser Stelle übereinstimmende Koordinaten, so wird auch der weitere Verlauf der beiden Segmente für deren Reihenfolge betrachtet.
+
+intersectionTest:
+Test auf Überschneidungen aus Aufgabe 1.
+
+intersectionsChecked:
+TreeSet, in dem die Indizes der schon miteinander auf Überschneidung getesteten Segmente gespeichert werden, sodass diese nicht mehrfach überprüft werden.
+
+Programmausführung:
+------------------------------------------
+Zunächst werden alle Start- & Endpunkte der Segmente zur Event queue hinzugefügt.
+Daraufhin wird von der Event queue so lange das erste Element herausgenommen, bis diese leer ist.
+Die Events werden je nach Typ (Startpunkt, Endpunkt, Intersektion) entsprechend dem Pseudocode im Skript behandelt - entsprechendes Hinzufügen/Entfernen von neuen Segmenten in/aus der Sweep line, sowie sich ergebende Überschneidungstests der Segmente mit neuer Position.
+
+Es wird stets darauf geachtet, dass in den Daten eine Reihenfolge vorhanden ist: beim Einlesen der Daten (Reihenfolge der Punkte eines Segments), in der Event Queue, der Sweep Line, etc. Das vereinfachte nicht nur die Logik, sondern sollte auch dafür sorgen, dass alle Überschneidungen gefunden werden - in den gegebenen Daten scheint das auch der Fall zu sein (gleiche Ergebnisse wie in Aufgabe 1). Allerdings ist es gut möglich, dass wenn sich mehrere Segmente in einem Punkt überschneiden NICHT alle Überschneidungen gefunden werden - dafür müsste sichergestellt werden, dass auch tatsächlich ALLE Segmente, die durch diesen Punkt laufen auf Überschneidungen überprüft werden (was hier nicht der Fall ist, da nur die Reihenfolge bei Überschneidungen geändert & angrenzende Segmente miteinander verglichen werden).
+
+Ergebnisse des Programms & Auswertung
+------------------------------------------
+Die Ergebnisse (siehe unten) zeigen eine deutlich kürzere Ausführungszeit des Sweep Line Algorithmus im Vergleich zum Brute Force Verfahren.
+Die Zeitdifferenz nimmt bei ansteigender Anzahl an Segmenten deutlich zu. Bei geringer Anzahl an Segmenten ist der Unteschied nicht allzu groß, da beim Sweep Line Algorithmus im Gegensatz zum Brute Force Verfahren zunächst einige Datenstrukturen initialisiert werden müssen.
+Die Anzahl gefundener Überschneidungen ist bei beiden Algorithmen gleich groß. Allerdings ist es möglich, dass bei anderen Datensätzen in unserer Implementierung des Sweep Line Algorithmus weniger Überschneidungen gefunden werden, falls sich mehrere Segmente in dem selben Punkt schneiden.
+
+Ergebnisse Aufgabe 3 (Sweep Line):
+Anzahl an Überschneidungen: 796
+Verlaufszeit s_1000_10.dat: 75 Millisek.
+
+Anzahl an Überschneidungen: 11
+Verlaufszeit s_1000_1.dat: 20 Millisek.
+
+Anzahl an Überschneidungen: 732
+Verlaufszeit s_10000_1.dat: 120 Millisek.
+
+Anzahl an Überschneidungen: 77126
+Verlaufszeit s_100000_1.dat: 12957 Millisek.
+
+
+
+Ergebnisse Aufgabe 1 (Brute Force):
+Anzahl an Überschneidungen: 796
+Verlaufszeit s_1000_10.dat: 115 Millisek.
+
+Anzahl an Überschneidungen: 11
+Verlaufszeit s_1000_1.dat: 50 Millisek.
+
+Anzahl an Überschneidungen: 732
+Verlaufszeit s_10000_1.dat: 660 Millisek.
+
+Anzahl an Überschneidungen: 77126
+Verlaufszeit s_100000_1.dat: 60137 Millisek.

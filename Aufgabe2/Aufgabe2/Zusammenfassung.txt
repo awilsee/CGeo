@@ -11,7 +11,7 @@ C++
 
 Parsing der SVG-Datei
 ------------------------------------------
-Die SVG-Datei wurde zeilenweise eingelesen und mithilfe eines XML-Parsers konnte anhand der Attribute und der Tiefe der Nodes durch die Struktur der SVG-Datei gesteuert werden. Die Bundesländer und Städte wurden in "path"-Elementen gespeichert, ihre Namen im "id"-Attribut. Die Koordinaten von Bundesländern wurden im Attribut "d", Städte in "sodipodi"-Koordinaten gespeichert.
+Die SVG-Datei wurde zeilenweise eingelesen und mithilfe eines XML-Parsers (rapidXml) konnte anhand der Attribute und der Tiefe der Nodes durch die Struktur der SVG-Datei gesteuert werden. Die Bundesländer und Städte wurden in "path"-Elementen gespeichert, ihre Namen im "id"-Attribut. Die Koordinaten von Bundesländern wurden im Attribut "d", Städte in "sodipodi"-Koordinaten gespeichert.
 Die Bundesländern bestehen aus mehreren Polygonen, deren Punkte teils absolut und teils relativ gespeichert wurden, so dass auch hier ein entsprechendes Parsing (Beginn einer Zeile z.B. mit M, l, L, z - Sonderfall: einmal tritt H innerhalb einer Zeile auf) notwendig war, um alle Punkte der Polygone mit absoluten Werten speichern zu können.
 
 Flächen der Bundesländer

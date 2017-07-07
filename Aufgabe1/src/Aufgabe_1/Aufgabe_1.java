@@ -8,9 +8,10 @@ import java.util.ArrayList;
 
 class Aufgabe1 {
 
-	private static final String FILE1 = "data\\Aufgabe_1\\s_1000_1.dat";
-	private static final String FILE2 = "data\\Aufgabe_1\\s_10000_1.dat";
-	private static final String FILE3 = "data\\Aufgabe_1\\s_100000_1.dat";
+	private static final String FILE1 = "data\\Aufgabe_1\\s_1000_10.dat";
+	private static final String FILE2 = "data\\Aufgabe_1\\s_1000_1.dat";
+	private static final String FILE3 = "data\\Aufgabe_1\\s_10000_1.dat";
+	private static final String FILE4 = "data\\Aufgabe_1\\s_100000_1.dat";
 
 	private static ArrayList<double[]> parseFile(String fileName) throws IOException {
 		FileReader fr = new FileReader(fileName);
@@ -83,17 +84,24 @@ class Aufgabe1 {
 		int numCrossedLines = numCrossedLines(data);
 		long timeEnd = System.currentTimeMillis();
 		System.out.println("Anzahl an Überschneidungen: " + numCrossedLines);
-		System.out.println("Verlaufszeit s_1000_1.dat: " + (timeEnd - timeStart) + " Millisek.");
+		System.out.println("Verlaufszeit s_1000_10.dat: " + (timeEnd - timeStart) + " Millisek.");
 
 		timeStart = System.currentTimeMillis();
 		data = parseFile(FILE2);
 		numCrossedLines = numCrossedLines(data);
 		timeEnd = System.currentTimeMillis();
 		System.out.println("\nAnzahl an Überschneidungen: " + numCrossedLines);
-		System.out.println("Verlaufszeit s_10000_1.dat: " + (timeEnd - timeStart) + " Millisek.");
+		System.out.println("Verlaufszeit s_1000_1.dat: " + (timeEnd - timeStart) + " Millisek.");
 
 		timeStart = System.currentTimeMillis();
 		data = parseFile(FILE3);
+		numCrossedLines = numCrossedLines(data);
+		timeEnd = System.currentTimeMillis();
+		System.out.println("\nAnzahl an Überschneidungen: " + numCrossedLines);
+		System.out.println("Verlaufszeit s_10000_1.dat: " + (timeEnd - timeStart) + " Millisek.");
+
+		timeStart = System.currentTimeMillis();
+		data = parseFile(FILE4);
 		numCrossedLines = numCrossedLines(data);
 		timeEnd = System.currentTimeMillis();
 		System.out.println("\nAnzahl an Überschneidungen: " + numCrossedLines);

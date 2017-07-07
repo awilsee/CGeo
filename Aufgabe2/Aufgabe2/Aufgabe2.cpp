@@ -76,6 +76,8 @@ int main() {
 		cout << city.name << " liegt in " << cityState.name << endl;
 	}
 
+	system("pause");
+
 	return 0;
 }
 
@@ -169,7 +171,7 @@ void calculateStateAreas(states_t& states) {
 		for (int j = 0; j < state.paths.size(); j++) // iterate through paths of state
 		{
 			points_t& path = state.paths[j];
-			int pathSize = path.size();
+			size_t pathSize = path.size();
 			double pathArea = 0.0; // initiate size (area) of path
 
 			for (int k = 1; k <= pathSize; k++) // iterate through points in path
