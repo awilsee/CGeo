@@ -57,12 +57,33 @@ func = [ 0; 0; -1]; %maximum radius, so minimize -r
 x =  linprog( func, A, b );
 
 % plotting results:
-%  plot circle
-phi = 0:0.05:2*pi;
-xk = (x(3) * cos(phi)) + x(1);
-yk = (x(3) * sin(phi)) + x(2);
+hold on
+drawCircle(x(1),x(2),x(3));
+hold off
+x(3)
 
-hold on;
-plot(xk, yk, 'r');
-%  plot center
-plot(x(1), x(2), 'rx');
+
+% used functions:
+function [ n ] = calcNormUVec( a, b, direction )
+    v = b - a; % calculating direction vector
+    
+    % calculate normal unit vector in dependence of direction
+    if( direction > 0 )
+        n = [ -v(2); v(1) ];
+    else
+        n = [ v(2); -v(1) ];
+    end
+    
+    n = n ./ norm( n, 2 ); % normalize vector
+end
+
+function [ h ] = drawCircle(xx,yy,rr)
+    th = 0:pi/50:2*pi;
+    xunit = rr * cos(th) + xx;
+    yunit = rr * sin(th) + yy;
+    % plot circle
+    h = plot(xunit, yunit);
+    % plot center
+    plot(xx, yy, 'rx');
+end
+
