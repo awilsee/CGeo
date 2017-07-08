@@ -1,0 +1,45 @@
+﻿Praktikum Computational Geometry SoSe 2017
+Zusammenfassung Aufgabe 5
+
+Andreas Wilhelm & Jakob Schuster
+------------------------------------------
+
+
+Programmiersprache
+------------------------------------------
+Matlab-Skript
+
+Linear Programming
+------------------------------------------
+Ein lineares Programm hat die mathematische Form mit den Randbedingungen:
+
+	a11*x1 + a12*x1 + ... + a1n*xn <= b1
+	a21*x1 + a22*x1 + ... + a2n*xn <= b2
+	  ...
+	am1*x1 + am2*x2 + ... + amn*xn <= bm
+
+un der zu maximierende, lineare Zielfunktion
+
+	c1*x1 + c2*x2 + ... + cn*xn = c^T*x
+
+  
+Um den größten einschreibbaren Kreis für ein vorgegebenes konvexes Polygon zu ermitteln, verwendet man folgeneden Ansatz:
+	d * n >= r		mit 	d = m - a
+	
+d entspricht dem Abstandsvektor von einem der beiden Punkte eines Polygonabschnitts a zum Kreismittelpunkt m und n dem Normaleneinheitsvektor, der ins Innere des Polygons zeigt.
+Daraus folgt:
+	r <= d*n = n1*m1 - a1*n1 + n2*m2 - a2*n2
+
+ -> -a1*n1 - a2*n2 >= - n1*m1 - n2*m2 + r
+ 
+Um den Kreisradius zu maximieren ergibt sich somit die Zielfunktion:
+	0*m1 + 0*m2 - 1*r
+
+
+Ergebnisse des Programms
+------------------------------------------
+Als Ergebnis erhält man die Kreise 
+für polygon.txt			mit Radius: 438.5922 Einheiten
+für testpolygon.txt		mit Radius: 5 Einheiten
+
+Auch die Plots bestätigen das Ergebnis.
